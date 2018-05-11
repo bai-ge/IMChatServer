@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+    <!--&lt;!&ndash;开发阶段用到的常量设置 ，开发阶段结束后必须注释 &ndash;&gt;-->
+    <!--&lt;!&ndash; 重新加载struts.xml文件 &ndash;&gt;-->
+    <!--<constant name="struts.configuration.xml.reload" value="true" />-->
+    <!--&lt;!&ndash; 打印更多的错误信息，便于查找错原因 &ndash;&gt;-->
+    <!--<constant name="strusts.devMode" value="true" />-->
+    <!--&lt;!&ndash; 关闭静态态缓冲 &ndash;&gt;-->
+    <!--<constant name="strusts.serve.static.browserCache" value="false" />-->
+    <!--&lt;!&ndash; 结束 &ndash;&gt;-->
+
+    <package name="home" namespace="/" extends="json-default">
+
+    </package>
+
+    <package name="user" namespace="/user" extends="json-default">
+        <!--登录注册-->
+        <action name="login" class="com.baige.action.UserAction" method="login">
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+        <action name="register" class="com.baige.action.UserAction" method="register">
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+        <action name="alias" class="com.baige.action.UserAction" method="alias">
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+    </package>
+
+    <package name="chat" namespace="/chat" extends="json-default">
+        <!--发送消息-->
+        <action name="send" class="com.baige.action.ChatMessageAction" method="sendMsg">
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+        <action name="receiveFind" class="com.baige.action.ChatMessageAction" method="findMsgByReceiveId">
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+        <action name="sendFind" class="com.baige.action.ChatMessageAction" method="findMsgBySenderId">
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+    </package>
+    <package name="file" namespace="/file" extends="json-default">
+        <action name="upload" class="com.baige.action.FileAction" method="upload">
+            <!--<result name="success" type="json">-->
+                <!--<param name="root">responseMsgMap</param>-->
+            <!--</result>-->
+        </action>
+    </package>
+</struts>

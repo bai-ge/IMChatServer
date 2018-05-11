@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.baige.models.User" table="users" schema="imchatdb">
+        <id name="id">
+            <column name="id" sql-type="int(11)"/>
+            <generator class="increment"></generator>
+        </id>
+        <property name="name">
+            <column name="user_name" sql-type="varchar(100)" length="20" not-null="true"/>
+        </property>
+        <property name="password">
+            <column name="user_password" sql-type="varchar(100)" length="20"/>
+        </property>
+        <property name="alias">
+            <column name="user_alias" sql-type="varchar(100)" length="100" not-null="false"/>
+        </property>
+        <property name="deviceId">
+            <column name="user_device_id" sql-type="varchar(100)" length="100" not-null="false"/>
+        </property>
+        <property name="loginTime">
+            <column name="user_login_time" sql-type="bigint(20)" not-null="false"/>
+        </property>
+        <property name="loginIp">
+            <column name="user_login_ip" sql-type="varchar(255)" not-null="false"/>
+        </property>
+        <property name="registerTime">
+            <column name="user_register_time" sql-type="bigint(20)" not-null="false"/>
+        </property>
+        <property name="verification">
+            <column name="user_verification" sql-type="varchar(500)" length="500" not-null="false"/>
+        </property>
+        <property name="imgName">
+            <column name="user_img_name" sql-type="varchar(100)" length="50" not-null="false"/>
+        </property>
+        <property name="remark">
+            <column name="user_remark" sql-type="varchar(255)" not-null="false"/>
+        </property>
+    </class>
+</hibernate-mapping>

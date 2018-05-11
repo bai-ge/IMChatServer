@@ -1,0 +1,110 @@
+package com.baige.service;
+
+import com.baige.DAOImpl.UserDAOImpl;
+import com.baige.commen.Parm;
+import com.baige.exception.SqlException;
+import com.baige.models.User;
+import com.baige.util.Tools;
+
+import java.util.List;
+import java.util.Map;
+
+public class HibernateUitlService {
+
+    /**
+     * @param name
+     * @return isClash
+     */
+    public static boolean checkNameClash(String name) {
+        UserDAOImpl userDAO = new UserDAOImpl();
+        List<User> list = null;
+        try {
+            list = userDAO.getIdByName(name);
+            if (list != null && !list.isEmpty()) {
+                return true;
+            }
+        } catch (SqlException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static void login(User user, Map<String, Object> responseMsgMap) {
+        UserDAOImpl userDAO = new UserDAOImpl();
+        try {
+            User updateUser = userDAO.searchUsrByNameAndPassword(user.getName(), user.getPassword());
+            if (updateUser != null ) {
+                //通知被迫下线的设备
+                if (!Tools.isEquals(updateUser.getDeviceId(), user.getDeviceId())&&
+                        !Tools.isEmpty(updateUser.getVerification())) {
+                    //被迫下线
+                    denyOfService(updateUser.getDeviceId(), updateUser.getVerification());
+                }
+                updateUser.setLoginTime(user.getLoginTime());
+                updateUser.setDeviceId(user.getDeviceId());
+                updateUser.setVerification(Tools.randomVerification());
+                userDAO.doUpdate(updateUser);
+                responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+                responseMsgMap.put(Parm.MEAN, "登录成功");
+                responseMsgMap.put(Parm.USER, updateUser);
+            } else {
+                responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+                responseMsgMap.put(Parm.MEAN, "用户不存在或密码错误");
+            }
+        } catch (SqlException e) {
+            e.printStackTrace();
+            responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+            responseMsgMap.put(Parm.MEAN, e.getMessage());
+        }
+    }
+
+
+    public static void register(User user, Map<String, Object> responseMsgMap) {
+        if (!checkNameClash(user.getName())) {
+            // 插入数据
+            UserDAOImpl userDAO = new UserDAOImpl();
+            try {
+                userDAO.doSave(user);
+                responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+                responseMsgMap.put(Parm.MEAN, "注册成功");
+                responseMsgMap.put(Parm.USER, user);
+            } catch (SqlException e) {
+                e.printStackTrace();
+                responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+                responseMsgMap.put(Parm.MEAN, e.getMessage());
+            }
+        } else {
+            responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+            responseMsgMap.put(Parm.MEAN, "用户已经存在");
+        }
+    }
+
+    public static void updateAlias(User user, Map<String, Object> responseMsgMap){
+        UserDAOImpl userDAO = new UserDAOImpl();
+        try {
+            user = userDAO.updateAliasByIdAndVer(user.getId(), user.getVerification(), user.getAlias());
+            if (user != null){
+                responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+                responseMsgMap.put(Parm.MEAN, "更新成功");
+            }else{
+                responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+                responseMsgMap.put(Parm.MEAN, "更新失败");
+            }
+        } catch (SqlException e) {
+            e.printStackTrace();
+            responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+            responseMsgMap.put(Parm.MEAN, "更新失败");
+        }
+
+    }
+
+    /**取消设备deviceId 的验证码 verification, 即被迫下线
+     * @param deviceId
+     * @param verification
+     */
+    public static void denyOfService(String deviceId, String verification){
+        //TODO
+    }
+
+
+}

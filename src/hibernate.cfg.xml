@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <!-- 配置连接数据库的基本信息 -->
+        <!--<property name="connection.username">root</property>-->
+        <!--<property name="connection.password">123456</property>-->
+        <property name="connection.username">root</property>
+        <property name="connection.password">123456</property>
+        <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="connection.url">jdbc:mysql://localhost:3306/imchatdb</property>
+
+        <!-- 配置hibernate的基本信息 -->
+        <!-- hibernate所使用的数据库方言 -->
+        <property name="dialect">org.hibernate.dialect.MySQLMyISAMDialect </property>
+        <!-- 执行操作时是否在控制台打印sql -->
+        <property name="show_sql">true</property>
+        <!-- 是否对sql进行格式化 -->
+        <property name="format_sql">true</property>
+        <!-- 指定自动生成数据表的策略 -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+
+        <!-- 指定关联的.hbm.xml文件 -->
+        <mapping resource="com/baige/models/User.hbm.xml"/>
+        <!--<mapping class="com.baige.models.ChatMessage"/>-->
+        <mapping resource="com/baige/models/ChatMessage.hbm.xml"/>
+        <!--<mapping class="com.baige.models.ChatMessage"/>-->
+        <!--<mapping class="com.baige.models.User"/>-->
+    </session-factory>
+</hibernate-configuration>
