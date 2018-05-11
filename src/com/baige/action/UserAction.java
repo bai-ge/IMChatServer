@@ -6,6 +6,8 @@ import com.baige.service.HibernateUitlService;
 import com.baige.util.Tools;
 import org.apache.struts2.ServletActionContext;
 
+import java.io.*;
+
 /**
  *
  */
@@ -23,10 +25,27 @@ public class UserAction extends BaseAction {
     private String imgName;
     private String remark;
 
+    private User user;
+
+    //封装上传文件域的成员变量
+    private File headImg;
+
+    //封装上传文件类型的成员变量
+    private String headImgContentType;
+
+    //封装上传文件名的属性
+    private String headImgFileName;
+
+    private String savePath;
 
     private int friendId;
 
-    private User user;
+    //下载头像
+    private String imgPath;
+
+    private String imgFileName;
+
+
 
     private void init(){
         if(user == null){
@@ -123,13 +142,81 @@ public class UserAction extends BaseAction {
         return SUCCESS;
     }
 
-
     /**修改头像
-     *
+     *  id
+     *  verification
+     *  file
      * @return
      */
-    public String uploadImg(){
+    public String changeImg(){
+        if(getHeadImg() != null && !Tools.isEmpty(getVerification())){
+            //验证用户
+            User user = HibernateUitlService.checkUser(getId(), getVerification());
+            if(user != null){
+                try{
+                    File filePath = new File(getSavePath());
+                    if(!filePath.exists()){
+                        filePath.mkdirs();//若文件不存在，则创建
+                    }
+
+                    FileOutputStream fos= new FileOutputStream(new File(filePath,getHeadImgFileName()));
+                    FileInputStream fis=new FileInputStream(getHeadImg());
+                    byte[] buffer = new byte[1024];
+                    int len = 0;
+                    while( (len = fis.read(buffer) ) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
+                    fos.close();
+                    fis.close();
+
+                    //删除原来的头像文件
+                    if(!Tools.isEmpty(user.getImgName()) && !Tools.isEquals(user.getImgName(), getHeadImgFileName())){
+                        File file = new File(getSavePath(), user.getImgName());
+                        if(file.exists()){
+                            file.delete();
+                        }
+                    }
+
+                    //更新用户头像文件名
+                   if(HibernateUitlService.updateHeadImgName(getId(), getHeadImgFileName())){
+                       getResponseMsgMap().clear();
+                       getResponseMsgMap().put(Parm.CODE, Parm.SUCCESS_CODE);
+                       getResponseMsgMap().put(Parm.MEAN, "更改头像成功");
+                   }else{
+                       getResponseMsgMap().clear();
+                       getResponseMsgMap().put(Parm.CODE, Parm.UNKNOWN_CODE);
+                       getResponseMsgMap().put(Parm.MEAN, "未知错误");
+                   }
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }else{
+                getResponseMsgMap().clear();
+                getResponseMsgMap().put(Parm.CODE, Parm.INVALID_CODE);
+                getResponseMsgMap().put(Parm.MEAN, "验证失败");
+            }
+        }else{
+            getResponseMsgMap().clear();
+            getResponseMsgMap().put(Parm.CODE, Parm.UNKNOWN_CODE);
+            getResponseMsgMap().put(Parm.MEAN, "参数错误");
+        }
         return SUCCESS;
+    }
+
+
+   public String downloadImg(){
+
+        System.out.println("filePath ="+getImgPath()+", fileName ="+getImgFileName());
+        return SUCCESS;
+   }
+
+    public InputStream getImgInputStream() throws Exception{
+        //获得路径和文件名
+        String file = getImgPath() + File.separator + getImgFileName();
+        System.out.println("downloadFile ="+file);
+//        return ServletActionContext.getServletContext().getResourceAsStream(file);
+        InputStream is = new FileInputStream(file);
+        return is;
     }
 
 
@@ -249,5 +336,62 @@ public class UserAction extends BaseAction {
 
     public void setFriendId(int friendId) {
         this.friendId = friendId;
+    }
+
+    public File getHeadImg() {
+        return headImg;
+    }
+
+    public void setHeadImg(File headImg) {
+        this.headImg = headImg;
+    }
+
+    public String getHeadImgContentType() {
+        return headImgContentType;
+    }
+
+    public void setHeadImgContentType(String headImgContentType) {
+        this.headImgContentType = headImgContentType;
+    }
+
+    public String getHeadImgFileName() {
+        return headImgFileName;
+    }
+
+    public void setHeadImgFileName(String headImgFileName) {
+        this.headImgFileName = headImgFileName;
+    }
+
+    public String getSavePath(){
+        return ServletActionContext.getServletContext()
+                .getRealPath(savePath);
+    }
+
+    public void setSavePath(String savePath) {
+        this.savePath = savePath;
+    }
+
+    public String getImgPath() {
+        return ServletActionContext.getServletContext()
+                .getRealPath(imgPath);
+    }
+
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
+    }
+
+    public String getImgFileName() {
+        return imgFileName;
+    }
+
+    public void setImgFileName(String imgFileName) {
+        this.imgFileName = imgFileName;
+        if(imgFileName != null){
+            try {
+                this.imgFileName = new String(imgFileName.getBytes(), "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

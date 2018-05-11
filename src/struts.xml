@@ -6,14 +6,19 @@
 
 <struts>
 
-    <!--&lt;!&ndash;开发阶段用到的常量设置 ，开发阶段结束后必须注释 &ndash;&gt;-->
-    <!--&lt;!&ndash; 重新加载struts.xml文件 &ndash;&gt;-->
-    <!--<constant name="struts.configuration.xml.reload" value="true" />-->
-    <!--&lt;!&ndash; 打印更多的错误信息，便于查找错原因 &ndash;&gt;-->
-    <!--<constant name="strusts.devMode" value="true" />-->
-    <!--&lt;!&ndash; 关闭静态态缓冲 &ndash;&gt;-->
-    <!--<constant name="strusts.serve.static.browserCache" value="false" />-->
-    <!--&lt;!&ndash; 结束 &ndash;&gt;-->
+    <!--开发阶段用到的常量设置 ，开发阶段结束后必须注释 -->
+    <!-- 重新加载struts.xml文件 -->
+    <constant name="struts.configuration.xml.reload" value="true" />
+
+    <!-- 打印更多的错误信息，便于查找错原因 -->
+    <constant name="strusts.devMode" value="true" />
+
+    <!-- 关闭静态态缓冲 -->
+    <constant name="strusts.serve.static.browserCache" value="false" />
+
+    <!--设置上传文件大小20MB，默认为2MB大小 -->
+    <constant name="struts.multipart.maxSize" value="20971520"/>
+    <!-- 结束 -->
 
     <package name="home" namespace="/" extends="json-default">
 
@@ -37,6 +42,36 @@
             <interceptor-ref name="json"></interceptor-ref>
             <result name="success" type="json">
                 <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+        <action name="changeImg" class="com.baige.action.UserAction" method="changeImg">
+            <interceptor-ref name="fileUpload">
+                <param name="allowedTypes">image/png,image/gif,image/jpeg,image/pjpeg,image/x-png</param>
+                <param name="maximunSize">8388608</param>
+            </interceptor-ref>
+            <interceptor-ref name="defaultStack"/>
+            <!-- 动态设置Action的属性值 -->
+            <param name="savePath">/head</param>
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+        <action name="downloadImg" class="com.baige.action.UserAction" method="downloadImg">
+            <param name="imgPath">/head</param>
+            <!--contentType：指定被下载文件的类型。若给出详细的类型，如：“image/jpg”。若不想给出具体的类型，则可设置参数为：“application/octet-stream”。-->
+
+            <!--inputName：指定被下载文件的入口输入流（此参数内容与Action类实现下载功能类的方法名有关，参数内容应为方法去掉“get”并且第一个字母改为小写）-->
+
+            <!--contentDisposition：指定下载的文件名（包括后缀）。-->
+
+            <!--bufferSize：指定下载文件时的缓冲大小。-->
+
+            <result name="success" type="stream">
+                <param name="contentType">application/octet-stream</param>
+                <param name="inputName">imgInputStream</param>
+                <param name="contentDisposition">filename=${imgFileName}</param>
+                <param name="bufferSize">4096</param>
             </result>
         </action>
     </package>
@@ -63,10 +98,18 @@
         </action>
     </package>
     <package name="file" namespace="/file" extends="json-default">
-        <action name="upload" class="com.baige.action.FileAction" method="upload">
-            <!--<result name="success" type="json">-->
-                <!--<param name="root">responseMsgMap</param>-->
-            <!--</result>-->
+        <action name="upload" class="com.baige.action.FileAction" method="uploadFile" >
+            <interceptor-ref name="fileUpload">
+                <param name="allowedTypes">image/png,image/gif,image/jpeg,image/pjpeg,image/x-png</param>
+                <param name="maximunSize">8388608</param>
+            </interceptor-ref>
+            <interceptor-ref name="defaultStack"/>
+            <!-- 动态设置Action的属性值 -->
+            <param name="savePath">/uploadFiles</param>
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
         </action>
     </package>
 </struts>

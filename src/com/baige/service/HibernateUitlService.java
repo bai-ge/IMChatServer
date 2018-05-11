@@ -1,5 +1,6 @@
 package com.baige.service;
 
+import com.baige.DAO.UserDAO;
 import com.baige.DAOImpl.UserDAOImpl;
 import com.baige.commen.Parm;
 import com.baige.exception.SqlException;
@@ -32,7 +33,7 @@ public class HibernateUitlService {
     public static void login(User user, Map<String, Object> responseMsgMap) {
         UserDAOImpl userDAO = new UserDAOImpl();
         try {
-            User updateUser = userDAO.searchUsrByNameAndPassword(user.getName(), user.getPassword());
+            User updateUser = userDAO.searchUserByNameAndPassword(user.getName(), user.getPassword());
             if (updateUser != null ) {
                 //通知被迫下线的设备
                 if (!Tools.isEquals(updateUser.getDeviceId(), user.getDeviceId())&&
@@ -79,6 +80,19 @@ public class HibernateUitlService {
         }
     }
 
+    public static User checkUser(int id, String verification){
+        UserDAOImpl userDAO = new UserDAOImpl();
+        try {
+            User user = userDAO.searchUserByIdAndVerification(id, verification);
+            return user;
+        } catch (SqlException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
     public static void updateAlias(User user, Map<String, Object> responseMsgMap){
         UserDAOImpl userDAO = new UserDAOImpl();
         try {
@@ -96,6 +110,17 @@ public class HibernateUitlService {
             responseMsgMap.put(Parm.MEAN, "更新失败");
         }
 
+    }
+
+    public static boolean updateHeadImgName(int id, String headImg){
+        UserDAOImpl userDAO = new UserDAOImpl();
+        boolean res = false;
+        try {
+            res = userDAO.updateHeadImgById(id, headImg);
+        } catch (SqlException e) {
+            e.printStackTrace();
+        }
+        return res;
     }
 
     /**取消设备deviceId 的验证码 verification, 即被迫下线

@@ -11,6 +11,9 @@
     <title>IM Chat Server</title>
 </head>
 <body>
-    Welcome to IM Chat Server.
+Welcome to IM Chat Server.
+<br>
+<a href="fileupload.jsp">上传文件</a><br>
+<a href="filedownload.jsp">下载文件</a>
 </body>
 </html>

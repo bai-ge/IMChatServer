@@ -58,7 +58,7 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements UserDAO {
     }
 
     @Override
-    public User searchUsrByNameAndPassword(String name, String password) throws SqlException{
+    public User searchUserByNameAndPassword(String name, String password) throws SqlException{
         User user = null;
         Session session = HibernateUtil.getSession(); // 生成session实例
         Transaction tx = session.beginTransaction(); // 创建transaction实例
@@ -104,5 +104,46 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements UserDAO {
         return user;
     }
 
+    @Override
+    public User searchUserByIdAndVerification(int id, String verification) throws SqlException {
+        User user = null;
+        Session session = HibernateUtil.getSession(); // 生成session实例
+        Transaction tx = session.beginTransaction(); // 创建transaction实例
+        try {
+            // 对应的“name” 是Bean中的字段名而不是数据库中表内的字段名
+            Criteria criteria =session.createCriteria(User.class).add(
+                    Restrictions.and(Restrictions.eq(UserDAO.ID, id),
+                            Restrictions.eq(UserDAO.VERIFICATION, verification)));
+            user = (User) criteria.uniqueResult();
+            tx.commit(); // 提交事务;
+        } catch (Exception e) {
+            e.printStackTrace();
+            tx.rollback(); // 回滚事务
+            throw new SqlException("sql execute fail !");
+        } finally {
+            HibernateUtil.closeSession();
+        }
+        return user;
+    }
 
+    @Override
+    public boolean updateHeadImgById(int id, String headImgName) throws SqlException {
+        Session session = HibernateUtil.getSession(); // 生成session实例
+        Transaction tx = session.beginTransaction(); // 创建transaction实例
+        int count = 0;
+        try {
+            Query q = session.createQuery("update User u set u.imgName  =:img  where u.id = :id");
+            q.setString("img", headImgName);
+            q.setInteger("id", id);
+            count = q.executeUpdate();
+            tx.commit(); // 提交事务;
+        } catch (Exception e) {
+            e.printStackTrace();
+            tx.rollback(); // 回滚事务
+            throw new SqlException("sql execute fail !");
+        } finally {
+            HibernateUtil.closeSession();
+        }
+        return count == 1;
+    }
 }
