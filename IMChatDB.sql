@@ -31,4 +31,24 @@ CREATE TABLE users (
 ) DEFAULT CHARSET=UTF8;
 
 
+-- 好友表 friends
+DROP TABLE if exists friends;
+CREATE TABLE friends (
+  id int auto_increment,
+  user_id int ,	              -- 用户ID
+  friend_id int,	            -- 朋友ID
+  user_alias varchar(100),	  -- 用户别名 (朋友设置的别名)
+  friend_alias varchar(100),	-- 朋友别名(用户设置的别名)
+  relate_time bigint(20),     -- 绑定时间
+  state int,                  -- 状态(申请中，同意，拒绝，删除，拉黑)
+  user_read_state int,        -- 用户是否已读
+  friend_read_state int,      -- 好友是否已读
+  remark varchar(255),	      -- 备注
+  PRIMARY KEY(id),
+  foreign key(user_id) references users(id),
+  foreign key(friend_id) references users(id)
+) DEFAULT CHARSET=UTF8;
+
+
+
 

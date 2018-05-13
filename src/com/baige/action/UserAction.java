@@ -45,6 +45,8 @@ public class UserAction extends BaseAction {
 
     private String imgFileName;
 
+    private String keyword;
+
 
 
     private void init(){
@@ -222,7 +224,36 @@ public class UserAction extends BaseAction {
 
 
 
+    /**通过关键词查找用户
+     *  id
+     *  verification
+     *  keyword
+     * @return
+     */
+    public String searchUserByKeyword(){
+        if(!Tools.isEmpty(getKeyword()) && !Tools.isEmpty(getVerification())){
+            //验证用户
+            User user = HibernateUitlService.checkUser(getId(), getVerification());
+            if(user != null){
+                getResponseMsgMap().clear();
+                HibernateUitlService.searchUserBykeyword(getKeyword(), getResponseMsgMap());
+            }else{
+                getResponseMsgMap().clear();
+                getResponseMsgMap().put(Parm.CODE, Parm.INVALID_CODE);
+                getResponseMsgMap().put(Parm.MEAN, "验证失败");
+            }
+        }else{
+            getResponseMsgMap().clear();
+            getResponseMsgMap().put(Parm.CODE, Parm.UNKNOWN_CODE);
+            getResponseMsgMap().put(Parm.MEAN, "参数错误");
+        }
+        return SUCCESS;
+    }
+
     //TODO
+    /*
+    *
+    * */
     public String findAllFriends(){
         return SUCCESS;
     }
@@ -238,6 +269,7 @@ public class UserAction extends BaseAction {
     public String seachFriend(){
         return SUCCESS;
     }
+
 
 
     /*get and set*/
@@ -393,5 +425,13 @@ public class UserAction extends BaseAction {
                 e.printStackTrace();
             }
         }
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 }

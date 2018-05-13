@@ -4,6 +4,7 @@
         "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
         "http://struts.apache.org/dtds/struts-2.5.dtd">
 
+
 <struts>
 
     <!--开发阶段用到的常量设置 ，开发阶段结束后必须注释 -->
@@ -52,6 +53,7 @@
             <interceptor-ref name="defaultStack"/>
             <!-- 动态设置Action的属性值 -->
             <param name="savePath">/head</param>
+
             <interceptor-ref name="json"></interceptor-ref>
             <result name="success" type="json">
                 <param name="root">responseMsgMap</param>
@@ -72,6 +74,12 @@
                 <param name="inputName">imgInputStream</param>
                 <param name="contentDisposition">filename=${imgFileName}</param>
                 <param name="bufferSize">4096</param>
+            </result>
+        </action>
+        <action name="search" class="com.baige.action.UserAction" method="searchUserByKeyword">
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
             </result>
         </action>
     </package>
@@ -106,6 +114,21 @@
             <interceptor-ref name="defaultStack"/>
             <!-- 动态设置Action的属性值 -->
             <param name="savePath">/uploadFiles</param>
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+    </package>
+
+    <package name="friend" namespace="/friend" extends="json-default">
+        <action name="search" class="com.baige.action.FriendAction" method="searchFriends">
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+        <action name="changAlias" class="com.baige.action.FriendAction" method="changFriendAlias">
             <interceptor-ref name="json"></interceptor-ref>
             <result name="success" type="json">
                 <param name="root">responseMsgMap</param>

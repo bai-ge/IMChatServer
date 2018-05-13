@@ -146,4 +146,23 @@ public class UserDAOImpl extends BaseDAOImpl<User> implements UserDAO {
         }
         return count == 1;
     }
+
+    @Override
+    public List<User> searchUserBykeyword(String keyword) throws SqlException {
+        List<User> list = new ArrayList<User>();
+        Session session = HibernateUtil.getSession(); // 生成session实例
+        Transaction tx = session.beginTransaction(); // 创建transaction实例
+        try {
+            Criteria criteria = session.createCriteria(User.class).add(Restrictions.or(Restrictions.like(UserDAO.NAME, "%"+keyword+"%"), Restrictions.like(UserDAO.ALIAS, "%"+keyword+"%")));
+            list = criteria.list();
+            tx.commit(); // 提交事务;
+        } catch (Exception e) {
+            e.printStackTrace();
+            tx.rollback(); // 回滚事务
+            throw new SqlException("sql execute fail !");
+        } finally {
+            HibernateUtil.closeSession();
+        }
+        return list;
+    }
 }

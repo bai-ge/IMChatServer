@@ -2,6 +2,7 @@ package com.baige.commen;
 
 public class Parm {
     public final static String USER = "user";
+    public final static String USERS = "users";
     public final static String NAME = "name";
     public final static String PASSWORD = "password";
     public final static String CODE = "code";
@@ -9,6 +10,9 @@ public class Parm {
     public final static String FILE = "file";
     public final static String FILE_NAME = "file_name";
     public final static String CONTENT_TYPE = "content_type";
+
+    public final static String FRIENDS = "friends";
+    public final static String FRIEND = "friend";
 
     public static final int SUCCESS_CODE = 200;
     public static final int FAIL_CODE = 500;

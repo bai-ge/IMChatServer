@@ -28,6 +28,7 @@
         <mapping resource="com/baige/models/User.hbm.xml"/>
         <!--<mapping class="com.baige.models.ChatMessage"/>-->
         <mapping resource="com/baige/models/ChatMessage.hbm.xml"/>
+        <mapping resource="com/baige/models/Friend.hbm.xml"/>
         <!--<mapping class="com.baige.models.ChatMessage"/>-->
         <!--<mapping class="com.baige.models.User"/>-->
     </session-factory>

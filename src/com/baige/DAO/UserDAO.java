@@ -27,4 +27,5 @@ public interface UserDAO {
     User searchUserByNameAndPassword(String name, String password) throws SqlException;
     User searchUserByIdAndVerification(int id, String verification) throws SqlException;
     boolean updateHeadImgById(int id, String headImgName) throws SqlException;
+    List<User> searchUserBykeyword(String keyword) throws SqlException;
 }

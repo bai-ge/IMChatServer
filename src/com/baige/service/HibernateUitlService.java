@@ -1,12 +1,15 @@
 package com.baige.service;
 
 import com.baige.DAO.UserDAO;
+import com.baige.DAOImpl.FriendDAOImpl;
 import com.baige.DAOImpl.UserDAOImpl;
 import com.baige.commen.Parm;
 import com.baige.exception.SqlException;
+import com.baige.models.FriendView;
 import com.baige.models.User;
 import com.baige.util.Tools;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +47,7 @@ public class HibernateUitlService {
                 updateUser.setLoginTime(user.getLoginTime());
                 updateUser.setDeviceId(user.getDeviceId());
                 updateUser.setVerification(Tools.randomVerification());
+                updateUser.setLoginIp(user.getLoginIp());
                 userDAO.doUpdate(updateUser);
                 responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
                 responseMsgMap.put(Parm.MEAN, "登录成功");
@@ -123,6 +127,24 @@ public class HibernateUitlService {
         return res;
     }
 
+    public static void searchUserBykeyword(String keyword, Map<String, Object> responseMsgMap){
+        UserDAOImpl userDAO = new UserDAOImpl();
+        try {
+            List<User> list = userDAO.searchUserBykeyword(keyword);
+            if(list != null && list.size() > 0){
+                responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+                responseMsgMap.put(Parm.USERS, list);
+            }else{
+                responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+                responseMsgMap.put(Parm.USERS, new ArrayList<>());
+            }
+        } catch (SqlException e) {
+            e.printStackTrace();
+            responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+            responseMsgMap.put(Parm.MEAN, e.getMessage());
+        }
+    }
+
     /**取消设备deviceId 的验证码 verification, 即被迫下线
      * @param deviceId
      * @param verification
@@ -132,4 +154,35 @@ public class HibernateUitlService {
     }
 
 
+    public static void searchFriends(int uid, Map<String,Object> responseMsgMap) {
+        FriendDAOImpl friendDAO = new FriendDAOImpl();
+        try {
+            List<FriendView>  friendViews = friendDAO.searchFriend(uid);
+            responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+            responseMsgMap.put(Parm.MEAN, "查询好友成功");
+            responseMsgMap.put(Parm.FRIENDS, friendViews);
+        } catch (SqlException e) {
+            e.printStackTrace();
+            responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+            responseMsgMap.put(Parm.MEAN, e.getMessage());
+        }
+    }
+
+    public static void changFriendAlias(int id, int uid, String alias, Map<String, Object> responseMsgMap){
+        FriendDAOImpl friendDAO = new FriendDAOImpl();
+        try {
+           boolean update = friendDAO.changFriendAlias(id, uid, alias);
+           if(update){
+               responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+               responseMsgMap.put(Parm.MEAN, "更改好友备注成功");
+           }else{
+               responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+               responseMsgMap.put(Parm.MEAN, "更改好友备注失败");
+           }
+        } catch (SqlException e) {
+            e.printStackTrace();
+            responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+            responseMsgMap.put(Parm.MEAN, e.getMessage());
+        }
+    }
 }
