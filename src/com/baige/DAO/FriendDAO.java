@@ -31,9 +31,9 @@ public interface FriendDAO {
 
     Friend rejectFriend(int id, int userId, int friendId) throws SqlException;
 
-    Friend deFriend(int id, int uerId, int friendId)throws SqlException;
+    Friend deFriend(int id, int userId, int friendId)throws SqlException;
 
-    Friend deledtFriend(int id, int userId, int friendId)throws SqlException;
+    Friend deleteFriend(int id, int userId, int friendId)throws SqlException;
 
     List<Friend> getUnRead(int userId)throws SqlException;
 }

@@ -27,6 +27,8 @@ public class FriendAction extends BaseAction {
 
     private String alias;
 
+    private String operation;
+
 
     /**
      * uid
@@ -65,6 +67,73 @@ public class FriendAction extends BaseAction {
             if(user != null){
                 getResponseMsgMap().clear();
                 HibernateUitlService.changFriendAlias(id, uid, getAlias(), getResponseMsgMap());
+            }else{
+                getResponseMsgMap().clear();
+                getResponseMsgMap().put(Parm.CODE, Parm.INVALID_CODE);
+                getResponseMsgMap().put(Parm.MEAN, "验证失败");
+            }
+        }else{
+            getResponseMsgMap().clear();
+            getResponseMsgMap().put(Parm.CODE, Parm.UNKNOWN_CODE);
+            getResponseMsgMap().put(Parm.MEAN, "参数错误");
+        }
+        return SUCCESS;
+    }
+
+    /**
+     * uid
+     * verification
+     * friendId
+     * @return
+     */
+    public String relateUser(){
+        if(!Tools.isEmpty(verification) ){
+            User user = HibernateUitlService.checkUser(getUid(), getVerification());
+            if(user != null){
+                getResponseMsgMap().clear();
+                HibernateUitlService.relateUser(uid, friendId, getResponseMsgMap());
+            }else{
+                getResponseMsgMap().clear();
+                getResponseMsgMap().put(Parm.CODE, Parm.INVALID_CODE);
+                getResponseMsgMap().put(Parm.MEAN, "验证失败");
+            }
+        }else{
+            getResponseMsgMap().clear();
+            getResponseMsgMap().put(Parm.CODE, Parm.UNKNOWN_CODE);
+            getResponseMsgMap().put(Parm.MEAN, "参数错误");
+        }
+        return SUCCESS;
+    }
+
+
+    /**
+     * id
+     * uid
+     * verification
+     * friendId
+     * operation
+     * @return
+     */
+    public String operation(){
+        if(!Tools.isEmpty(verification) && !Tools.isEmpty(operation)){
+            User user = HibernateUitlService.checkUser(getUid(), getVerification());
+            if(user != null){
+                getResponseMsgMap().clear();
+                switch (operation){
+                    case "agree":
+                        HibernateUitlService.agreeFriend(getId(), getUid(), getFriendId(), getResponseMsgMap());
+                        break;
+                    case "reject":
+                        HibernateUitlService.rejectFriend(getId(), getUid(), getFriendId(), getResponseMsgMap());
+                        break;
+                    case "delete":
+                        HibernateUitlService.deleteFriend(getId(), getUid(), getFriendId(), getResponseMsgMap());
+                        break;
+                    case "defriend":
+                        HibernateUitlService.deFriend(getId(), getUid(), getFriendId(), getResponseMsgMap());
+                        break;
+                }
+                HibernateUitlService.relateUser(uid, friendId, getResponseMsgMap());
             }else{
                 getResponseMsgMap().clear();
                 getResponseMsgMap().put(Parm.CODE, Parm.INVALID_CODE);
@@ -183,5 +252,13 @@ public class FriendAction extends BaseAction {
 
     public void setAlias(String alias) {
         this.alias = alias;
+    }
+
+    public String getOperation() {
+        return operation;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
     }
 }

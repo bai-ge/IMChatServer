@@ -1,152 +1,134 @@
 package com.baige.action;
 
 import com.baige.commen.Parm;
-import com.baige.commen.State;
-import com.baige.DAOImpl.ChatMessageDAOImpl;
-import com.baige.exception.SqlException;
-import com.baige.models.ChatMessage;
 
-import java.util.List;
+import com.baige.models.ChatMessage;
+import com.baige.models.User;
+import com.baige.service.HibernateUitlService;
+import com.baige.util.Tools;
+
 
 public class ChatMessageAction extends BaseAction {
     private int id;
     private Integer senderId;
     private Integer receiveId;
     private Long sendTime;
-    private Long receiveTime;
     private String context;
     private Integer contextType;
     private Integer contextState;
     private String remark;
 
-    private int method;
     private String senderName;
     private String receiveName;
 
-    public String search(){
-        switch (method) {
-            case State.CHATMSG_METHOD_FIND_HISTORY_MSG:
-                findHistoryMsg();
-                break;
-            case State.CHATMSG_METHOD_FIND_BY_SEND_ID:
-                findMsgBySenderId();
-                break;
-            case State.CHATMSG_METHOD_FIND_BY_SEND_NAME:
-                findMsgBySenderName();
-                break;
-            case State.CHATMSG_METHOD_FIND_UNREAD_BY_ID:
-                findMsgByReceiveId();
-                break;
-            case State.CHATMSG_METHOD_FIND_UNREAD_BY_NAME:
-                findMsgByReceiveName();
-                break;
-            case State.CHATMSG_METHOD_FIND_ALL:
-                break;
-            default:
-
-        }
-        return SUCCESS;
-    }
-
-    public String findHistoryMsg(){
-        ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
-        try {
-            List<ChatMessage> list = chatMessageDAO.findHistoryMsg(id);
-            getResponseMsgMap().clear();
-            getResponseMsgMap().put(Parm.CODE, Parm.SUCCESS_CODE);
-            getResponseMsgMap().put(Parm.MEAN, "Find history Message success !");
-        } catch (SqlException e) {
-            e.printStackTrace();
-            getResponseMsgMap().clear();
-            getResponseMsgMap().put(Parm.CODE, Parm.FAIL_CODE);
-            getResponseMsgMap().put(Parm.MEAN, "Find history Message fail !");
-        }
-        return SUCCESS;
-    }
-
+    private String verification;
+    /**
+     * senderId
+     * receiveId
+     * verification
+     * context
+     * contextType 可有可无
+     * @return
+     */
     public String sendMsg() {
-        ChatMessage chatMessage = init();
-        chatMessage.setSendTime(System.currentTimeMillis());
-        chatMessage.setContextState(State.MSG_STATE_UNREAD);
-        ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
-        try {
-            chatMessageDAO.doSave(chatMessage);
+        if(!Tools.isEmpty(getVerification()) && !Tools.isEmpty(context) && senderId != 0 && receiveId != 0){
+            User user = HibernateUitlService.checkUser(senderId, getVerification());
+            if(user != null){
+                ChatMessage chatMessage = init();
+                getResponseMsgMap().clear();
+                HibernateUitlService.sendMessage(chatMessage, getResponseMsgMap());
+            }else{
+                getResponseMsgMap().clear();
+                getResponseMsgMap().put(Parm.CODE, Parm.INVALID_CODE);
+                getResponseMsgMap().put(Parm.MEAN, "验证失败");
+            }
+        }else{
             getResponseMsgMap().clear();
-            getResponseMsgMap().put(Parm.CODE, Parm.SUCCESS_CODE);
-            getResponseMsgMap().put(Parm.MEAN, "Send Message success !");
-        } catch (SqlException e) {
-            e.printStackTrace();
+            getResponseMsgMap().put(Parm.CODE, Parm.UNKNOWN_CODE);
+            getResponseMsgMap().put(Parm.MEAN, "参数错误");
+        }
+        return SUCCESS;
+    }
+
+    /**
+     * senderId
+     * receiveId
+     * verification
+     * @return
+     */
+    public String findMsgRelate() {
+        if(!Tools.isEmpty(getVerification()) && senderId != null && receiveId != null){
+            User user = HibernateUitlService.checkUser(senderId, getVerification());
+            if(user != null){
+                getResponseMsgMap().clear();
+                HibernateUitlService.findMsgRelate(senderId, receiveId, getResponseMsgMap());
+            }else{
+                getResponseMsgMap().clear();
+                getResponseMsgMap().put(Parm.CODE, Parm.INVALID_CODE);
+                getResponseMsgMap().put(Parm.MEAN, "验证失败");
+            }
+        }else{
             getResponseMsgMap().clear();
-            getResponseMsgMap().put(Parm.CODE, Parm.FAIL_CODE);
-            getResponseMsgMap().put(Parm.MEAN, "Send Message fail !");
+            getResponseMsgMap().put(Parm.CODE, Parm.UNKNOWN_CODE);
+            getResponseMsgMap().put(Parm.MEAN, "参数错误");
+        }
+        return SUCCESS;
+    }
+
+    /**
+     * senderId
+     * receiveId
+     * verification
+     * sendTime
+     * @return
+     */
+    public String findMsgRelateAfterTime() {
+        if(!Tools.isEmpty(getVerification()) && senderId != null && receiveId != null){
+            User user = HibernateUitlService.checkUser(senderId, getVerification());
+            if(user != null){
+                getResponseMsgMap().clear();
+                HibernateUitlService.findMsgRelateAfterTime(senderId, receiveId, sendTime, getResponseMsgMap());
+            }else{
+                getResponseMsgMap().clear();
+                getResponseMsgMap().put(Parm.CODE, Parm.INVALID_CODE);
+                getResponseMsgMap().put(Parm.MEAN, "验证失败");
+            }
+        }else{
+            getResponseMsgMap().clear();
+            getResponseMsgMap().put(Parm.CODE, Parm.UNKNOWN_CODE);
+            getResponseMsgMap().put(Parm.MEAN, "参数错误");
+        }
+        return SUCCESS;
+    }
+
+    /**
+     * senderId
+     * receiveId
+     * verification
+     * sendTime
+     * @return
+     */
+    public String findMsgRelateBeforeTime() {
+        if(!Tools.isEmpty(getVerification()) && senderId != null && receiveId != null){
+            User user = HibernateUitlService.checkUser(senderId, getVerification());
+            if(user != null){
+                getResponseMsgMap().clear();
+                HibernateUitlService.findMsgRelateBeforeTime(senderId, receiveId, sendTime, getResponseMsgMap());
+            }else{
+                getResponseMsgMap().clear();
+                getResponseMsgMap().put(Parm.CODE, Parm.INVALID_CODE);
+                getResponseMsgMap().put(Parm.MEAN, "验证失败");
+            }
+        }else{
+            getResponseMsgMap().clear();
+            getResponseMsgMap().put(Parm.CODE, Parm.UNKNOWN_CODE);
+            getResponseMsgMap().put(Parm.MEAN, "参数错误");
         }
         return SUCCESS;
     }
 
 
-    public String findMsgBySenderId() {
-        try {
-            ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
-            chatMessageDAO.findMsgBySendId(id);
-            getResponseMsgMap().clear();
-            getResponseMsgMap().put(Parm.CODE, Parm.SUCCESS_CODE);
-            getResponseMsgMap().put(Parm.MEAN, "Send Message success !");
-        } catch (SqlException e) {
-            e.printStackTrace();
-            getResponseMsgMap().clear();
-            getResponseMsgMap().put(Parm.CODE, Parm.FAIL_CODE);
-            getResponseMsgMap().put(Parm.MEAN, "Send Message fail !");
-        }
-        return SUCCESS;
-    }
 
-    public String findMsgBySenderName() {
-        try {
-            ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
-            chatMessageDAO.findMsgBySendName(senderName);
-            getResponseMsgMap().clear();
-            getResponseMsgMap().put(Parm.CODE, Parm.SUCCESS_CODE);
-            getResponseMsgMap().put(Parm.MEAN, "Send Message success !");
-        } catch (SqlException e) {
-            e.printStackTrace();
-            getResponseMsgMap().clear();
-            getResponseMsgMap().put(Parm.CODE, Parm.FAIL_CODE);
-            getResponseMsgMap().put(Parm.MEAN, "Send Message fail !");
-        }
-        return SUCCESS;
-    }
-
-    public String findMsgByReceiveId() {
-        try {
-            ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
-            chatMessageDAO.findUnreadMsgByReceiveId(id);
-            getResponseMsgMap().clear();
-            getResponseMsgMap().put(Parm.CODE, Parm.SUCCESS_CODE);
-            getResponseMsgMap().put(Parm.MEAN, "Send Message success !");
-        } catch (SqlException e) {
-            e.printStackTrace();
-            getResponseMsgMap().clear();
-            getResponseMsgMap().put(Parm.CODE, Parm.FAIL_CODE);
-            getResponseMsgMap().put(Parm.MEAN, "Send Message fail !");
-        }
-        return SUCCESS;
-    }
-
-    public String findMsgByReceiveName() {
-        try {
-            ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
-            chatMessageDAO.findUnreadMsgByReceiveName(receiveName);
-            getResponseMsgMap().clear();
-            getResponseMsgMap().put(Parm.CODE, Parm.SUCCESS_CODE);
-            getResponseMsgMap().put(Parm.MEAN, "Send Message success !");
-        } catch (SqlException e) {
-            e.printStackTrace();
-            getResponseMsgMap().clear();
-            getResponseMsgMap().put(Parm.CODE, Parm.FAIL_CODE);
-            getResponseMsgMap().put(Parm.MEAN, "Send Message fail !");
-        }
-        return SUCCESS;
-    }
 
     private ChatMessage init() {
         ChatMessage chatMessage = new ChatMessage();
@@ -154,10 +136,14 @@ public class ChatMessageAction extends BaseAction {
         chatMessage.setSenderId(senderId);
         chatMessage.setReceiveId(receiveId);
         chatMessage.setSendTime(System.currentTimeMillis());
-        chatMessage.setSendTime(sendTime);
-        chatMessage.setReceiveTime(receiveTime);
+        if(getSendTime() != null){
+            chatMessage.setSendTime(getSendTime());
+        }
         chatMessage.setContext(context);
-        chatMessage.setContextType(contextType);
+        chatMessage.setContextType(Parm.MSG_TYPE_TEXT);
+        if(contextType != null){
+            chatMessage.setContextType(contextType);
+        }
         chatMessage.setContextState(contextState);
         chatMessage.setRemark(remark);
         System.out.println(chatMessage.toString());
@@ -221,28 +207,12 @@ public class ChatMessageAction extends BaseAction {
         this.sendTime = sendTime;
     }
 
-    public Long getReceiveTime() {
-        return receiveTime;
-    }
-
-    public void setReceiveTime(Long receiveTime) {
-        this.receiveTime = receiveTime;
-    }
-
     public Integer getContextState() {
         return contextState;
     }
 
     public void setContextState(Integer contextState) {
         this.contextState = contextState;
-    }
-
-    public int getMethod() {
-        return method;
-    }
-
-    public void setMethod(int method) {
-        this.method = method;
     }
 
     public String getSenderName() {
@@ -259,5 +229,13 @@ public class ChatMessageAction extends BaseAction {
 
     public void setReceiveName(String receiveName) {
         this.receiveName = receiveName;
+    }
+
+    public String getVerification() {
+        return verification;
+    }
+
+    public void setVerification(String verification) {
+        this.verification = verification;
     }
 }

@@ -10,16 +10,13 @@
             <generator class="increment"></generator>
         </id>
         <property name="senderId">
-            <column name="sender_id" sql-type="int(11)" not-null="true"/>
+            <column name="sender_id" sql-type="int(11)"/>
         </property>
         <property name="receiveId">
-            <column name="receive_id" sql-type="int(11)" not-null="true"/>
+            <column name="receive_id" sql-type="int(11)"/>
         </property>
         <property name="sendTime">
             <column name="send_time" sql-type="bigint(20)" not-null="false"/>
-        </property>
-        <property name="receiveTime">
-            <column name="receive_time" sql-type="bigint(20)" not-null="false"/>
         </property>
         <property name="context">
             <column name="context" sql-type="varchar(1000)" length="1000" not-null="false"/>

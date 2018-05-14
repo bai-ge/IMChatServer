@@ -150,19 +150,21 @@ public class FriendDAOImpl extends BaseDAOImpl<Friend> implements FriendDAO {
             friend.setFriendId(friendId);
             friend.setRelateTime(System.currentTimeMillis());
             friend.setFriendReadState(State.UNREAD_STATE);
-            friend.setState(State.RELATETION_ADD);
+            friend.setState(userId * 10 + State.RELATETION_ADD);
             doSave(friend);
+            System.out.println("添加"+friend.toString());
             return friend;
         } else {
-            int state = friend.getState();
+            int state = friend.getState() == null ? 0 : friend.getState();
             if (state != State.RELATETION_ADD && state != State.RELATETION_AGREE) {
                 friend.setUserAlias("");
                 friend.setFriendAlias("");
                 friend.setUserId(userId);
                 friend.setFriendId(friendId);
                 friend.setFriendReadState(State.UNREAD_STATE);
-                friend.setState(State.RELATETION_ADD);
+                friend.setState(userId * 10 +State.RELATETION_ADD);
                 doUpdate(friend);
+                System.out.println("更新"+friend.toString());
                 return friend;
             }
         }
@@ -176,11 +178,11 @@ public class FriendDAOImpl extends BaseDAOImpl<Friend> implements FriendDAO {
         int count = 0;
         Friend friend = null;
         try {
-            Query q = session.createQuery("update Friend f set f.state  =:state, f.userReadState = :user_read where f.id = :id and f.state = :old_state");
-            q.setInteger("state", State.RELATETION_AGREE);
+            Query q = session.createQuery("update Friend f set f.state =:state, f.userReadState = :user_read where f.id = :id and f.state = :old_state");
+            q.setInteger("state", userId * 10 + State.RELATETION_AGREE);
             q.setInteger("user_read", State.UNREAD_STATE);
             q.setInteger("id", id);
-            q.setInteger("old_state", State.RELATETION_ADD);
+            q.setInteger("old_state", friendId * 10 + State.RELATETION_ADD);
             count = q.executeUpdate();
             if (count == 1) {
                 friend = doGetById(id);
@@ -198,17 +200,81 @@ public class FriendDAOImpl extends BaseDAOImpl<Friend> implements FriendDAO {
 
     @Override
     public Friend rejectFriend(int id, int userId, int friendId) throws SqlException {
-        return null;
+        Session session = HibernateUtil.getSession(); // 生成session实例
+        Transaction tx = session.beginTransaction(); // 创建transaction实例
+        int count = 0;
+        Friend friend = null;
+        try {
+            Query q = session.createQuery("update Friend f set f.state =:state, f.userReadState = :user_read where f.id = :id and f.state = :old_state");
+            q.setInteger("state", userId * 10 + State.RELATETION_REJECT);
+            q.setInteger("user_read", State.UNREAD_STATE);
+            q.setInteger("id", id);
+            q.setInteger("old_state", friendId * 10 + State.RELATETION_ADD);
+            count = q.executeUpdate();
+            if (count == 1) {
+                friend = doGetById(id);
+            }
+            tx.commit(); // 提交事务;
+        } catch (Exception e) {
+            e.printStackTrace();
+            tx.rollback(); // 回滚事务
+            throw new SqlException("sql execute fail !");
+        } finally {
+            HibernateUtil.closeSession();
+        }
+        return friend;
     }
 
     @Override
-    public Friend deFriend(int id, int uerId, int friendId) throws SqlException {
-        return null;
+    public Friend deFriend(int id, int userId, int friendId) throws SqlException {
+        Session session = HibernateUtil.getSession(); // 生成session实例
+        Transaction tx = session.beginTransaction(); // 创建transaction实例
+        int count = 0;
+        Friend friend = null;
+        try {
+            Query q = session.createQuery("update Friend f set f.state =:state where f.id = :id and (f.userId = :uid or f.friendId = :uid)");
+            q.setInteger("state", userId * 10 + State.RELATETION_DEFRIEND);
+            q.setInteger("id", id);
+            q.setInteger("uid", userId);
+            count = q.executeUpdate();
+            if (count == 1) {
+                friend = doGetById(id);
+            }
+            tx.commit(); // 提交事务;
+        } catch (Exception e) {
+            e.printStackTrace();
+            tx.rollback(); // 回滚事务
+            throw new SqlException("sql execute fail !");
+        } finally {
+            HibernateUtil.closeSession();
+        }
+        return friend;
     }
 
     @Override
-    public Friend deledtFriend(int id, int userId, int friendId) throws SqlException {
-        return null;
+    public Friend deleteFriend(int id, int userId, int friendId) throws SqlException {
+        Session session = HibernateUtil.getSession(); // 生成session实例
+        Transaction tx = session.beginTransaction(); // 创建transaction实例
+        int count = 0;
+        Friend friend = null;
+        try {
+            Query q = session.createQuery("update Friend f set f.state =:state where f.id = :id and (f.userId = :uid or f.friendId = :uid)");
+            q.setInteger("state", userId * 10 + State.RELATETION_DELETE);
+            q.setInteger("id", id);
+            q.setInteger("uid", userId);
+            count = q.executeUpdate();
+            if (count == 1) {
+                friend = doGetById(id);
+            }
+            tx.commit(); // 提交事务;
+        } catch (Exception e) {
+            e.printStackTrace();
+            tx.rollback(); // 回滚事务
+            throw new SqlException("sql execute fail !");
+        } finally {
+            HibernateUtil.closeSession();
+        }
+        return friend;
     }
 
     @Override

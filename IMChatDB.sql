@@ -5,12 +5,13 @@ CREATE TABLE chat_message (
   sender_id int, -- 发送者ID
   receive_id int, -- 接收者ID
   send_time bigint(20), -- 发送时间
-  receive_time bigint(20), -- 接收时间
   context varchar(1000), -- 内容
   context_type int,	-- 内容类型
   context_state int, -- 已读、未读消息
   remark varchar(255),	-- 备注
-  PRIMARY KEY(id)
+  PRIMARY KEY(id),
+  foreign key(sender_id) references users(id),
+  foreign key(receive_id) references users(id)
 ) DEFAULT CHARSET=UTF8;
 
 -- 用户表 users

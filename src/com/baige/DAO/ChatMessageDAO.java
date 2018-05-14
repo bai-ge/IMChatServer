@@ -6,13 +6,20 @@ import com.baige.models.ChatMessage;
 import java.util.List;
 
 public interface ChatMessageDAO {
-    List<ChatMessage> findUnreadMsgByReceiveId(int id) throws SqlException;
 
-    List<ChatMessage> findUnreadMsgByReceiveName(String name) throws SqlException;
+    String ID = "id";
+    String SENDER_ID = "senderId";
+    String RECEIVE_ID = "receiveId";
+    String SEND_TIME = "sendTime";
+    String CONTEXT = "context";
+    String CONTEXT_TYPE = "contextType";
+    String CONTEXT_STATE = "contextState";
+    String REMARK = "remark";
 
-    List<ChatMessage> findMsgBySendId(int id) throws SqlException;
+    List<ChatMessage> findMsgRelate(int uid, int friendId) throws SqlException;
 
-    List<ChatMessage> findMsgBySendName(String name) throws SqlException;
+    List<ChatMessage> findMsgRelateAfterTime(int uid, int friendId, long time) throws SqlException;
 
-    List<ChatMessage> findHistoryMsg(int id) throws SqlException; // 返回最近100条聊天记录
+    List<ChatMessage> findMsgRelateBeforeTime(int uid, int friendId, long time) throws SqlException;
+
 }

@@ -3,6 +3,9 @@
         "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 
+<!--　<!DOCTYPE hibernate-configuration PUBLIC-->
+<!--"-//Hibernate/Hibernate Configuration DTD 3.0//EN"-->
+<!--"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">-->
 <hibernate-configuration>
     <session-factory>
         <!-- 配置连接数据库的基本信息 -->
@@ -15,7 +18,7 @@
 
         <!-- 配置hibernate的基本信息 -->
         <!-- hibernate所使用的数据库方言 -->
-        <property name="dialect">org.hibernate.dialect.MySQLMyISAMDialect </property>
+        <property name="dialect">org.hibernate.dialect.MySQLMyISAMDialect</property>
         <!-- 执行操作时是否在控制台打印sql -->
         <property name="show_sql">true</property>
         <!-- 是否对sql进行格式化 -->

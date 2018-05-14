@@ -92,18 +92,29 @@
                 <param name="root">responseMsgMap</param>
             </result>
         </action>
-        <action name="receiveFind" class="com.baige.action.ChatMessageAction" method="findMsgByReceiveId">
+
+        <!--查找消息-->
+        <action name="find" class="com.baige.action.ChatMessageAction" method="findMsgRelate">
             <interceptor-ref name="json"></interceptor-ref>
             <result name="success" type="json">
                 <param name="root">responseMsgMap</param>
             </result>
         </action>
-        <action name="sendFind" class="com.baige.action.ChatMessageAction" method="findMsgBySenderId">
+        <!--查找消息-->
+        <action name="findAfterTime" class="com.baige.action.ChatMessageAction" method="findMsgRelateAfterTime">
             <interceptor-ref name="json"></interceptor-ref>
             <result name="success" type="json">
                 <param name="root">responseMsgMap</param>
             </result>
         </action>
+        <!--查找消息-->
+        <action name="findBeforeTime" class="com.baige.action.ChatMessageAction" method="findMsgRelateBeforeTime">
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+
     </package>
     <package name="file" namespace="/file" extends="json-default">
         <action name="upload" class="com.baige.action.FileAction" method="uploadFile" >
@@ -129,6 +140,18 @@
             </result>
         </action>
         <action name="changAlias" class="com.baige.action.FriendAction" method="changFriendAlias">
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+        <action name="relate" class="com.baige.action.FriendAction" method="relateUser">
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+        <action name="operation" class="com.baige.action.FriendAction" method="operation">
             <interceptor-ref name="json"></interceptor-ref>
             <result name="success" type="json">
                 <param name="root">responseMsgMap</param>

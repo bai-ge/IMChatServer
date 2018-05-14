@@ -10,10 +10,10 @@
             <generator class="increment"></generator>
         </id>
         <property name="userId">
-            <column name="user_id" sql-type="int(11)" not-null="false"/>
+            <column name="user_id" sql-type="int(11)" not-null="true"/>
         </property>
         <property name="friendId">
-            <column name="friend_id" sql-type="int(11)" not-null="false"/>
+            <column name="friend_id" sql-type="int(11)" not-null="true"/>
         </property>
         <property name="userAlias">
             <column name="user_alias" sql-type="varchar(100)" length="100" not-null="false"/>
