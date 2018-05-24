@@ -19,6 +19,11 @@ public class HibernateUtil {
 	// 使用静态代码块初始化 Hibernate
 	static {
 		try {
+//			SAXReader reader = new SAXReader();
+////			reader.setEncoding("GBK"); //这里指定编码，好像不管用
+//			InputStream is = ConfigHelper.getConfigStream("/hibernate.cfg.xml" );
+//			Document doc = reader.read(new InputStreamReader( is ), "utf-8"); //在读取文件时，指定编码才有效。
+//			is.close();
 			Configuration configuration = new Configuration().configure(); // 读取配置文件 hibernate.cfg.xml
 			sessionFactory = configuration.buildSessionFactory();	// 创建 SesstionFactory
 		} catch (Throwable ex) {
@@ -34,7 +39,7 @@ public class HibernateUtil {
 	public static Session getSession() throws HibernateException {
 		Session session = threadLocal.get();
 		if (session == null || !session.isOpen()) {
-			if (sessionFactory == null) {
+			if (sessionFactory == null || sessionFactory.isClosed()) {
 				rebuildSesstionFactory();
 			}
 			// 通过SessionFactory对象创建session对象

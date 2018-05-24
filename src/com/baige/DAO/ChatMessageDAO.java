@@ -22,4 +22,14 @@ public interface ChatMessageDAO {
 
     List<ChatMessage> findMsgRelateBeforeTime(int uid, int friendId, long time) throws SqlException;
 
+    List<ChatMessage> findMsg(int uid) throws SqlException;
+
+    List<ChatMessage> findMsgAfterTime(int uid, long time) throws SqlException;
+
+    List<ChatMessage> findMsgBeforeTime(int uid, long time) throws SqlException;
+
+    boolean readBeforeTime(int uid, long time) throws SqlException;
+
+    boolean readBeforeTime(int uid, int friendId, long time) throws SqlException;
+
 }

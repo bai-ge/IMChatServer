@@ -2,15 +2,16 @@ package com.baige.service;
 
 import com.baige.DAO.UserDAO;
 import com.baige.DAOImpl.ChatMessageDAOImpl;
+import com.baige.DAOImpl.FileDAOImpl;
 import com.baige.DAOImpl.FriendDAOImpl;
 import com.baige.DAOImpl.UserDAOImpl;
 import com.baige.commen.Parm;
+import com.baige.connect.msg.PushHelper;
 import com.baige.exception.SqlException;
-import com.baige.models.ChatMessage;
-import com.baige.models.Friend;
-import com.baige.models.FriendView;
-import com.baige.models.User;
+import com.baige.models.*;
+import com.baige.util.JsonTools;
 import com.baige.util.Tools;
+import netscape.javascript.JSObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -287,9 +288,14 @@ public class HibernateUitlService {
 
     public static void sendMessage(ChatMessage chatMessage, Map<String, Object> responseMsgMap) {
         ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
+        UserDAOImpl userDAO = new UserDAOImpl();
         try {
             chatMessageDAO.doSave(chatMessage);
             //TODO 推送
+            User from = userDAO.doGetById(chatMessage.getSenderId());
+            User to = userDAO.doGetById(chatMessage.getReceiveId());
+            PushHelper.push(from.getDeviceId(), to.getDeviceId(), JsonTools.getJSON(chatMessage), Parm.CHAT);
+
             responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
             responseMsgMap.put(Parm.MEAN, "发送成功");
             responseMsgMap.put(Parm.CHAT, chatMessage);
@@ -300,16 +306,16 @@ public class HibernateUitlService {
         }
     }
 
-    public static void findMsgRelate(int uid, int friendId, Map<String, Object> responseMsgMap){
+    public static void findMsgRelate(int uid, int friendId, Map<String, Object> responseMsgMap) {
         ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
         try {
             List<ChatMessage> chatMessages = chatMessageDAO.findMsgRelate(uid, friendId);
             //TODO 推送
-            if(chatMessages != null && chatMessages.size() > 0){
+            if (chatMessages != null && chatMessages.size() > 0) {
                 responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
                 responseMsgMap.put(Parm.MEAN, "查找成功");
                 responseMsgMap.put(Parm.CHAT_LIST, chatMessages);
-            }else{
+            } else {
                 responseMsgMap.put(Parm.CODE, Parm.BLANK_CODE);
                 responseMsgMap.put(Parm.MEAN, "查找成功");
             }
@@ -319,16 +325,17 @@ public class HibernateUitlService {
             responseMsgMap.put(Parm.MEAN, e.getMessage());
         }
     }
-    public static void findMsgRelateAfterTime(int uid, int friendId, long time, Map<String, Object> responseMsgMap){
+
+    public static void findMsgRelateAfterTime(int uid, int friendId, long time, Map<String, Object> responseMsgMap) {
         ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
         try {
             List<ChatMessage> chatMessages = chatMessageDAO.findMsgRelateAfterTime(uid, friendId, time);
             //TODO 推送
-            if(chatMessages != null && chatMessages.size() > 0){
+            if (chatMessages != null && chatMessages.size() > 0) {
                 responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
                 responseMsgMap.put(Parm.MEAN, "查找成功");
                 responseMsgMap.put(Parm.CHAT_LIST, chatMessages);
-            }else{
+            } else {
                 responseMsgMap.put(Parm.CODE, Parm.BLANK_CODE);
                 responseMsgMap.put(Parm.MEAN, "查找成功");
             }
@@ -338,20 +345,139 @@ public class HibernateUitlService {
             responseMsgMap.put(Parm.MEAN, e.getMessage());
         }
     }
-    public static void findMsgRelateBeforeTime(int uid, int friendId, long time, Map<String, Object> responseMsgMap){
+
+    public static void findMsgRelateBeforeTime(int uid, int friendId, long time, Map<String, Object> responseMsgMap) {
         ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
         try {
             List<ChatMessage> chatMessages = chatMessageDAO.findMsgRelateBeforeTime(uid, friendId, time);
             //TODO 推送
-            if(chatMessages != null && chatMessages.size() > 0){
+            if (chatMessages != null && chatMessages.size() > 0) {
                 responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
                 responseMsgMap.put(Parm.MEAN, "查找成功");
                 responseMsgMap.put(Parm.CHAT_LIST, chatMessages);
-            }else{
+            } else {
                 responseMsgMap.put(Parm.CODE, Parm.BLANK_CODE);
                 responseMsgMap.put(Parm.MEAN, "查找成功");
             }
         } catch (SqlException e) {
+            e.printStackTrace();
+            responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+            responseMsgMap.put(Parm.MEAN, e.getMessage());
+        }
+    }
+
+    public static void findMsg(int uid, Map<String, Object> responseMsgMap) {
+        ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
+        try {
+            List<ChatMessage> chatMessages = chatMessageDAO.findMsg(uid);
+            //TODO 推送
+            if (chatMessages != null && chatMessages.size() > 0) {
+                responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+                responseMsgMap.put(Parm.MEAN, "查找成功");
+                responseMsgMap.put(Parm.CHAT_LIST, chatMessages);
+            } else {
+                responseMsgMap.put(Parm.CODE, Parm.BLANK_CODE);
+                responseMsgMap.put(Parm.MEAN, "查找成功");
+            }
+        } catch (SqlException e) {
+            e.printStackTrace();
+            responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+            responseMsgMap.put(Parm.MEAN, e.getMessage());
+        }
+    }
+
+    public static void findMsgAfterTime(int uid, long time, Map<String, Object> responseMsgMap) {
+        ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
+        try {
+            List<ChatMessage> chatMessages = chatMessageDAO.findMsgAfterTime(uid, time);
+            //TODO 推送
+            if (chatMessages != null && chatMessages.size() > 0) {
+                responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+                responseMsgMap.put(Parm.MEAN, "查找成功");
+                responseMsgMap.put(Parm.CHAT_LIST, chatMessages);
+            } else {
+                responseMsgMap.put(Parm.CODE, Parm.BLANK_CODE);
+                responseMsgMap.put(Parm.MEAN, "查找成功");
+            }
+        } catch (SqlException e) {
+            e.printStackTrace();
+            responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+            responseMsgMap.put(Parm.MEAN, e.getMessage());
+        }
+    }
+
+    public static void findMsgBeforeTime(int uid, long time, Map<String, Object> responseMsgMap) {
+        ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
+        try {
+            List<ChatMessage> chatMessages = chatMessageDAO.findMsgBeforeTime(uid, time);
+            //TODO 推送
+            if (chatMessages != null && chatMessages.size() > 0) {
+                responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+                responseMsgMap.put(Parm.MEAN, "查找成功");
+                responseMsgMap.put(Parm.CHAT_LIST, chatMessages);
+            } else {
+                responseMsgMap.put(Parm.CODE, Parm.BLANK_CODE);
+                responseMsgMap.put(Parm.MEAN, "查找成功");
+            }
+        } catch (SqlException e) {
+            e.printStackTrace();
+            responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+            responseMsgMap.put(Parm.MEAN, e.getMessage());
+        }
+    }
+
+    public static void readMsgBeforeTime(int uid, long time, Map<String, Object> responseMsgMap) {
+        ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
+        try {
+            boolean success = chatMessageDAO.readBeforeTime(uid, time);
+            responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+            responseMsgMap.put(Parm.MEAN, "更新成功");
+        } catch (SqlException e) {
+            e.printStackTrace();
+            responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+            responseMsgMap.put(Parm.MEAN, e.getMessage());
+        }
+    }
+    public static void readMsgBeforeTime(int uid, int friendId, long time, Map<String, Object> responseMsgMap) {
+        ChatMessageDAOImpl chatMessageDAO = new ChatMessageDAOImpl();
+        try {
+            boolean success = chatMessageDAO.readBeforeTime(uid, friendId, time);
+            responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+            responseMsgMap.put(Parm.MEAN, "更新成功");
+        } catch (SqlException e) {
+            e.printStackTrace();
+            responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+            responseMsgMap.put(Parm.MEAN, e.getMessage());
+        }
+    }
+
+
+    public static void saveFile(FileEntity fileEntity, Map<String, Object> responseMsgMap){
+        FileDAOImpl fileDAO = new FileDAOImpl();
+        try{
+            fileDAO.doSave(fileEntity);
+            responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+            responseMsgMap.put(Parm.MEAN, "文件上传成功");
+        }catch (SqlException e){
+            e.printStackTrace();
+            responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
+            responseMsgMap.put(Parm.MEAN, e.getMessage());
+        }
+    }
+
+    public static void searchAllFile(Map<String, Object> responseMsgMap){
+        FileDAOImpl fileDAO = new FileDAOImpl();
+        try{
+            List<FileEntity> fileEntities = fileDAO.doFindAll();
+            if(fileEntities != null && fileEntities.size() > 0){
+                responseMsgMap.put(Parm.CODE, Parm.SUCCESS_CODE);
+                responseMsgMap.put(Parm.MEAN, "查询成功");
+                responseMsgMap.put(Parm.FILES, fileEntities);
+            }else{
+                responseMsgMap.put(Parm.CODE, Parm.NOTFIND_CODE);
+                responseMsgMap.put(Parm.MEAN, "未找到");
+            }
+        }catch (SqlException e){
             e.printStackTrace();
             responseMsgMap.put(Parm.CODE, Parm.FAIL_CODE);
             responseMsgMap.put(Parm.MEAN, e.getMessage());

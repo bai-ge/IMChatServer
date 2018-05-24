@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.baige.models.FileEntity" table="files" schema="imchatdb">
+        <id name="id">
+            <column name="id" sql-type="int(11)"/>
+            <generator class="increment"></generator>
+        </id>
+        <property name="userId">
+            <column name="user_id" sql-type="int(11)" not-null="false"/>
+        </property>
+        <property name="fileName">
+            <column name="file_name" sql-type="varchar(100)" length="255" not-null="false"/>
+        </property>
+        <property name="filePath">
+            <column name="file_path" sql-type="varchar(100)" length="255" not-null="false"/>
+        </property>
+        <property name="fileType">
+            <column name="file_type" sql-type="int(11)" not-null="false"/>
+        </property>
+        <property name="fileSize">
+            <column name="file_size" sql-type="bigint(20)" not-null="false"/>
+        </property>
+        <property name="fileDescribe">
+            <column name="file_describe" sql-type="varchar(100)" length="255" not-null="false"/>
+        </property>
+        <property name="uploadTime">
+            <column name="upload_time" sql-type="bigint(20)" not-null="false"/>
+        </property>
+        <property name="downloadCount">
+            <column name="download_count" sql-type="int(11)" not-null="false"/>
+        </property>
+        <property name="remark">
+            <column name="remark" sql-type="varchar(255)" not-null="false"/>
+        </property>
+    </class>
+</hibernate-mapping>

@@ -94,21 +94,27 @@
         </action>
 
         <!--查找消息-->
-        <action name="find" class="com.baige.action.ChatMessageAction" method="findMsgRelate">
+        <action name="find" class="com.baige.action.ChatMessageAction" method="findMsg">
             <interceptor-ref name="json"></interceptor-ref>
             <result name="success" type="json">
                 <param name="root">responseMsgMap</param>
             </result>
         </action>
         <!--查找消息-->
-        <action name="findAfterTime" class="com.baige.action.ChatMessageAction" method="findMsgRelateAfterTime">
+        <action name="findAfterTime" class="com.baige.action.ChatMessageAction" method="findMsgAfterTime">
             <interceptor-ref name="json"></interceptor-ref>
             <result name="success" type="json">
                 <param name="root">responseMsgMap</param>
             </result>
         </action>
         <!--查找消息-->
-        <action name="findBeforeTime" class="com.baige.action.ChatMessageAction" method="findMsgRelateBeforeTime">
+        <action name="findBeforeTime" class="com.baige.action.ChatMessageAction" method="findMsgBeforeTime">
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+        <action name="read" class="com.baige.action.ChatMessageAction" method="readMsgBeforeTime">
             <interceptor-ref name="json"></interceptor-ref>
             <result name="success" type="json">
                 <param name="root">responseMsgMap</param>
@@ -119,12 +125,18 @@
     <package name="file" namespace="/file" extends="json-default">
         <action name="upload" class="com.baige.action.FileAction" method="uploadFile" >
             <interceptor-ref name="fileUpload">
-                <param name="allowedTypes">image/png,image/gif,image/jpeg,image/pjpeg,image/x-png</param>
+                <!--<param name="allowedTypes">image/png,image/gif,image/jpeg,image/pjpeg,image/x-png</param>-->
                 <param name="maximunSize">8388608</param>
             </interceptor-ref>
             <interceptor-ref name="defaultStack"/>
             <!-- 动态设置Action的属性值 -->
             <param name="savePath">/uploadFiles</param>
+            <interceptor-ref name="json"></interceptor-ref>
+            <result name="success" type="json">
+                <param name="root">responseMsgMap</param>
+            </result>
+        </action>
+        <action name="search" class="com.baige.action.FileAction" method="search">
             <interceptor-ref name="json"></interceptor-ref>
             <result name="success" type="json">
                 <param name="root">responseMsgMap</param>
